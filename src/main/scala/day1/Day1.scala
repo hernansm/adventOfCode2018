@@ -27,11 +27,11 @@ object Day1 extends App {
 
   def firstFrequencyReached(list: List[String], freq: Int = 0): Int = {
     println("finding first repeated frequency..")
-    list.foldLeft(freq) {
-      val sum = _ + _.toInt
-      sum
-
-    }
+//    list.foldLeft(freq) {
+//      //val sum = _ + _.toInt
+//      sum
+//
+//    }
     ???
   }
 }
