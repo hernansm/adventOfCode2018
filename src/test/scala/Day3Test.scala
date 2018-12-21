@@ -3,7 +3,7 @@ import org.scalatest.FlatSpec
 
 class Day3Test extends FlatSpec {
   "A FabricSlicer" should "find # of square inches of fabric within 2+ claims" in {
-    val claims = List[String]("#1 @ 1,3: 4x4", "#2 @3,1: 4x4", "#3 @ 5,5: 2x2")
+    val claims = List[String]("#1 @ 1,3: 4x4", "#2 @ 3,1: 4x4", "#3 @ 5,5: 2x2")
 
     /*
     claims:
@@ -24,7 +24,7 @@ class Day3Test extends FlatSpec {
      */
 
     val actualOverlappedClaims = Day3.fabricOverlapCounter(claims)
-    val expectedOverlappedClaims = 2
+    val expectedOverlappedClaims = 4
 
      assert(expectedOverlappedClaims == actualOverlappedClaims)
   }

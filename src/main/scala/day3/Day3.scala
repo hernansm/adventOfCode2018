@@ -23,44 +23,119 @@
      #3 @ 5,5: 2x2
 
    visually:
-     ........
-     ...2222.
-     ...2222.
-     .11XX22.
-     .11XX22.
-     .111133.
-     .111133.
-     ........
+     ........ 1
+     ...2222. 2
+     ...2222. 3
+     .11XX22. 4
+     .11XX22. 5
+     .111133. 6
+     .111133. 7
+     ........ 8
 
+     12345678
     */
 
 
 package day3
 
-object Day3 {
+import scala.io.Source
 
+object Day3 extends App {
+  val file: List[String] = Source.fromResource("problems/day3.txt").getLines.toList
+  val claimedFabric = fabricOverlapCounter(file)
+  println("claimed: " + claimedFabric)
+
+
+  /**
+    * create a map - this will hold all used cells
+    * for each claim:
+    *     find the starting coordinate
+    *     loop through the height and width of claim
+    *     check if coord is in map.
+    *         if so check claim value. if >=1 increment claimCount
+    *        if not. add coord to map with claim value of 1
+    * return claimCount
+    *
+    * @param claims list of claims
+    * @return total square inches of fabric with 2+ claims
+    */
   def fabricOverlapCounter(claims: List[String]): Int = {
-    // create a map - this will hold all used cells
-    // create a set - this will hold all used cells with 2+ claims
-    // for each claim:
-    //    find the starting coordinate
-    //    loop through the height and width of claim
-    //    check if coord is in set. if so move on
-    //    check if coord is in map. if so, increment value. if value is 2 add coord to set
-    // return set.size
-
-    // might not need to use a set.. could just check the map. check the value. if 2+ increment counter. save on space
-
     // map of fabricCoordinate -> claimedAmt
-    val usedFabricMap = Map[Int,Int]()
+    var usedFabricMap = Map[(Int, Int),Int]()
+    var claimCount = 0
+
+    var seenCoordinates: Set[(Int, Int)] = Set()
+    var overlappingCoordinates: Set[(Int, Int)] = Set()
+    val checker = 0
+
+    parseClaims(claims)
 
     claims.foreach( claim => {
-      // find starting coord
-      // loop through claimed area
+      val parsedClaim = claim.replace(":", "")split(Array(' ', ',', 'x'))
+      val leftEdge = parsedClaim(2).toInt
+      val topEdge = parsedClaim(3).toInt
+      val width = parsedClaim(4).toInt
+      val height = parsedClaim(5).toInt
+
+   //   println("\nclaim: " + claim)
+//      println("leftEdge: " + leftEdge)
+//      println("topEdge: " + topEdge)
+//      println("width: " + width)
+//      println("height: " + height + "\n")
+
+      var yCoor = topEdge + 1
+      for(i <- 1 to height) {
+        for (inch <- 1 to width) {
+          val xCoor = inch + leftEdge
+          val claimedFabricSquareInch = (xCoor, yCoor)
+
+          if (seenCoordinates(claimedFabricSquareInch)) {
+            overlappingCoordinates += claimedFabricSquareInch
+
+          } else {
+            seenCoordinates += claimedFabricSquareInch
+          }
+
+          // println(claimedFabricSquareInch)
+          if (usedFabricMap.contains(claimedFabricSquareInch)) {
+            val claimedValue = usedFabricMap(claimedFabricSquareInch) + 1
+            // println("inch: " + claimedFabricSquareInch + " claim value: " + claimedValue)
+            if (claimedValue == 2) {
+              claimCount += 1
+            }
+            usedFabricMap + (claimedFabricSquareInch -> claimedValue)
+          } else {
+            usedFabricMap += (claimedFabricSquareInch -> 1)
+            // println("adding claimed inch: " + claimedFabricSquareInch)
+          }
+        }
+        yCoor += 1
+      }
 
     })
 
-    ???
+   // println("claimedFabric: " + claimCount)
+
+    println("seen coordinates: " + seenCoordinates.size)
+    println("overlapping coordinates: " + overlappingCoordinates.size)
+
+    overlappingCoordinates.size
   }
 
+  def parseClaims(claims: List[String]): List[Claim]  = {
+    claims.map(claim => {
+      val parsedClaim = claim.replace(":", "").replace("#", "") split (Array(' ', ',', 'x'))
+      val claimId = parsedClaim(0)
+      val leftEdge = parsedClaim(2).toInt
+      val topEdge = parsedClaim(3).toInt
+      val width = parsedClaim(4).toInt
+      val height = parsedClaim(5).toInt
+
+      val test = Claim(claimId, leftEdge, topEdge, width, height)
+      println("claim: " + test)
+      test
+    })
+  }
 }
+
+case class Claim(id: String, leftEdge: Int, topEdge: Int, width: Int, height: Int)
